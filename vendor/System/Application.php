@@ -10,7 +10,7 @@ class Application
      * @var array
      */
     private $container = [];
-    
+
     /**
      * __construct
      *
@@ -34,6 +34,8 @@ class Application
     public function run()
     {
         $this->session->start();
+
+        $this->request->prepareUrl();
     }
 
     /**
@@ -86,7 +88,7 @@ class Application
     public function get($key)
     {
         // is not sharing in the container
-        if (! $this->isSharing($key) ) {
+        if (!$this->isSharing($key)) {
             // is a core alias class
             if ($this->isCoreAlias($key)) {
                 // share the key with new object and it will store in container and make only one object because it already in the container
@@ -161,15 +163,15 @@ class Application
     private function coreClasses()
     {
         return [
-            'request'   => 'System\\Http\\Request',
-            'response'  => 'System\\Http\\Response',
-            'session'   => 'System\\Session\\Session',
-            'cookie'    => 'System\\Cookie',
-            'load'      => 'System\\Loader',
-            'html'      => 'System\\Html',
-            'db'        => 'System\\Database',
-            'view'      => 'System\\View\\ViewFactory',
-        ]; 
+            'request' => 'System\\Http\\Request',
+            'response' => 'System\\Http\\Response',
+            'session' => 'System\\Session\\Session',
+            'cookie' => 'System\\Cookie',
+            'load' => 'System\\Loader',
+            'html' => 'System\\Html',
+            'db' => 'System\\Database',
+            'view' => 'System\\View\\ViewFactory',
+        ];
     }
 
     /**
@@ -180,6 +182,6 @@ class Application
      */
     public function __get($key)
     {
-       return $this->get($key); 
+        return $this->get($key);
     }
 }
