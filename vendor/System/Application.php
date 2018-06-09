@@ -33,7 +33,7 @@ class Application
      */
     public function run()
     {
-        
+        $this->session->start();
     }
 
     /**
@@ -163,7 +163,7 @@ class Application
         return [
             'request'   => 'System\\Http\\Request',
             'response'  => 'System\\Http\\Response',
-            'session'   => 'System\\Session',
+            'session'   => 'System\\Session\\Session',
             'cookie'    => 'System\\Cookie',
             'load'      => 'System\\Loader',
             'html'      => 'System\\Html',

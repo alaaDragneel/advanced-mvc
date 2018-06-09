@@ -12,9 +12,23 @@ if (! function_exists('dd')) {
     {
         echo '<pre>';
         array_map(function ($var) {
-            print_r($var);
+            var_dump($var);
         }, $params); // $params = func_get_args
         echo '</pre>';
     }
+}
 
+if (! function_exists('array_get')) {
+    /**
+     * Get The Value Form The Given Array From The Given Key if found
+     * otherwise get the default value
+     * 
+     * @param array $array
+     * @param string||int $key
+     * @param mixed $default
+     */
+    function array_get($array, $key, $default = null)
+    {
+        return isset($array[$key]) ? $array[$key] : $default;
+    }
 }
