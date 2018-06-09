@@ -24,8 +24,16 @@ class Application
         $this->registerClasses();
 
         $this->loadHelpers();
+    }
+
+    /**
+     * Run the Application
+     * 
+     * @return void
+     */
+    public function run()
+    {
         
-        dd($this->file);
     }
 
     /**
@@ -70,14 +78,37 @@ class Application
     }
 
     /**
-     * Get Shared value
+     * Get Shared value with implementing lazy loading
      *
      * @param string $key
      * @return bool
      */
     public function get($key)
     {
-        return isset($this->container[$key]) ? $this->container[$key] : null;
+        // is not sharing in the container
+        if (! $this->isSharing($key) ) {
+            // is a core alias class
+            if ($this->isCoreAlias($key)) {
+                // share the key with new object and it will store in container and make only one object because it already in the container
+                $this->share($key, $this->createNewCoreObject($key));
+            } else {
+                die("<b>{$key}</b> not found in application container");
+            }
+        }
+
+        // resolve the key from the container
+        return $this->container[$key];
+    }
+
+    /**
+     * String if the given key is shared through the application
+     * 
+     * @param string $key
+     * @return bool
+     */
+    public function isSharing($key)
+    {
+        return isset($this->container[$key]);
     }
 
     /**
@@ -92,6 +123,53 @@ class Application
         $this->container[$key] = $value;
 
         return $this;
+    }
+
+    /**
+     * Determine if the given key is an alias to core class
+     * 
+     * @param string $alias
+     * @return bool
+     */
+    private function isCoreAlias($alias)
+    {
+        $coreClasses = $this->coreClasses();
+
+        return isset($coreClasses[$alias]);
+    }
+
+    /**
+     * Create new object for the core class based on the given alias
+     *
+     * @param string $alias
+     * @return object
+     */
+    private function createNewCoreObject($alias)
+    {
+        $coreClasses = $this->coreClasses();
+
+        $object = $coreClasses[$alias];
+
+        return new $object($this);
+    }
+
+    /**
+     * Get All Core Classes With its Aliases
+     * 
+     * @return array
+     */
+    private function coreClasses()
+    {
+        return [
+            'request'   => 'System\\Http\\Request',
+            'response'  => 'System\\Http\\Response',
+            'session'   => 'System\\Session',
+            'cookie'    => 'System\\Cookie',
+            'load'      => 'System\\Loader',
+            'html'      => 'System\\Html',
+            'db'        => 'System\\Database',
+            'view'      => 'System\\View\\ViewFactory',
+        ]; 
     }
 
     /**
