@@ -8,6 +8,6 @@ use System\FileSystem;
 
 $fileSystem = new FileSystem(__DIR__);
 
-$app = new Application($fileSystem);
+$app = Application::getInstance($fileSystem);
 
 $app->run();

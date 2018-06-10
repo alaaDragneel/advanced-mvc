@@ -25,7 +25,7 @@ class Request
    */
   public function prepareUrl()
   {
-    $script = dirname($this->server('SCRIPT_NAME'));
+    $script = strtolower(dirname($this->server('SCRIPT_NAME')));
 
     $requestUri = $this->server('REQUEST_URI');
 
@@ -33,11 +33,8 @@ class Request
       [$requestUri, $queryString] = explode('?', $requestUri);
     }
 
-    $pattern = preg_quote("/^{$script}/");
-    $this->url = preg_replace($pattern, '', $requestUri);
-
-    $requestScheme = is_null($this->server('REQUEST_SCHEME')) ? 'http'  : $this->server('REQUEST_SCHEME');
-    $this->baseUrl = $requestScheme . '://' . $this->server('HTTP_HOST') . $script;
+    $this->url = preg_replace("#^{$script}#", '', $requestUri);
+    $this->baseUrl = $this->server('REQUEST_SCHEME') . '://' . $this->server('HTTP_HOST') . $script;
   }
 
   /**

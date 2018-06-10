@@ -12,18 +12,43 @@ class Application
     private $container = [];
 
     /**
+     * Application Object
+     *
+     * @var \System\Application 
+     */
+     private static $instance;
+    
+
+    /**
      * __construct
      *
      * @param \System\FileSystem $fileSystem
      * @return void
      */
-    public function __construct(FileSystem $fileSystem)
+    private function __construct(FileSystem $fileSystem)
     {
         $this->share('file', $fileSystem);
 
         $this->registerClasses();
 
+        static::$instance = $this;
+
         $this->loadHelpers();
+    }
+    
+    /**
+     * Get Application Instance
+     *
+     * @param \System\FileSystem
+     * @return \System\Application
+     */
+    public function getInstance($fileSystem = null)
+    {
+        if (is_null(static::$instance)) {
+            static::$instance = new static($fileSystem);
+        }
+
+        return static::$instance;
     }
 
     /**
@@ -36,6 +61,10 @@ class Application
         $this->session->start();
 
         $this->request->prepareUrl();
+
+        $this->file->call($this->file->toAppPath('app\routes'));
+
+        [ $controller, $method, $arguments ] = $this->route->getProperRoute();
     }
 
     /**
@@ -163,14 +192,15 @@ class Application
     private function coreClasses()
     {
         return [
-            'request' => 'System\\Http\\Request',
-            'response' => 'System\\Http\\Response',
-            'session' => 'System\\Session\\Session',
-            'cookie' => 'System\\Cookie',
-            'load' => 'System\\Loader',
-            'html' => 'System\\Html',
-            'db' => 'System\\Database',
-            'view' => 'System\\View\\ViewFactory',
+            'request'   => 'System\\Http\\Request',
+            'response'  => 'System\\Http\\Response',
+            'session'   => 'System\\Session\\Session',
+            'route'     => 'System\\Route',
+            'cookie'    => 'System\\Cookie',
+            'load'      => 'System\\Loader',
+            'html'      => 'System\\Html',
+            'db'        => 'System\\Database',
+            'view'      => 'System\\View\\ViewFactory',
         ];
     }
 
