@@ -66,8 +66,10 @@ class Application
 
         [ $controller, $method, $arguments ] = $this->route->getProperRoute();
 
-        $this->load->action($controller, $method, $arguments);
-        
+        // (string) => convert the output object to string this usually Get Error
+        // But We Use [ "__toString()" ] Magic Method in the \System\View\View
+        $output = (string) $this->load->action($controller, $method, $arguments);
+
     }
 
     /**
