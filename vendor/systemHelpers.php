@@ -32,3 +32,18 @@ if (! function_exists('array_get')) {
         return isset($array[$key]) ? $array[$key] : $default;
     }
 }
+
+if (!function_exists('__e')) {
+    /**
+     * Escape The Given Value
+     * Otherwise get The Default Value
+     *
+     * @param string $value
+     * @return string
+     */
+    function __e($value)
+    {
+        return htmlspecialchars($value);
+    }
+
+}
