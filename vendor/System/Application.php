@@ -70,6 +70,9 @@ class Application
         // But We Use [ "__toString()" ] Magic Method in the \System\View\View
         $output = (string) $this->load->action($controller, $method, $arguments);
 
+        $this->response->setOutput($output);        
+
+        $this->response->send();
     }
 
     /**
