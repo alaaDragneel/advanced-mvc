@@ -55,6 +55,54 @@ class Database
     *
     * @var array
     */
+    private $wheres = [];
+
+    /**
+    * Selects
+    *
+    * @var array
+    */
+    private $selects = [];
+
+    /**
+    * Joins
+    *
+    * @var array
+    */
+    private $joins = [];
+
+    /**
+    * Limit
+    *
+    * @var int
+    */
+    private $limit = 0;
+
+    /**
+    * Offset
+    *
+    * @var int
+    */
+    private $offset = 0;
+
+    /**
+    * Total Rows
+    *
+    * @var int
+    */
+    private $rows = 0;
+
+    /**
+    * Order By
+    *
+    * @var array
+    */
+    private $orderBy = [];
+
+    /**
+     * Constructor
+     * @param \System\Application $app
+     */
     public function __construct(Application $app)
     {
         $this->app = $app;
@@ -108,6 +156,245 @@ class Database
     {
         return static::$connection;
     }
+
+    /**
+     * Set select clause
+     *
+     * @param string $select
+     * @return $this
+     */
+    public function select($select)
+    {
+        $this->selects[] = $select;
+
+        return $this;
+    }
+
+    /**
+     * Join clause
+     *
+     * @param string $join
+     * @return $this
+     */
+    public function join($join)
+    {
+        $this->joins[] = $join;
+
+        return $this;
+    }
+
+    /**
+     * orderBy clause
+     *
+     * @param string $column
+     * @param string $sort
+     * @return $this
+     */
+    public function orderBy($column, $sort = ' ASC ')
+    {
+        $this->orderBy = [$column, $sort];
+
+        return $this;
+    }
+
+    /**
+     * orderBy ASC clause
+     *
+     * @param string $column
+     * @return $this
+     */
+    public function oldest($column = 'id')
+    {
+        $this->orderBy = [$column, 'ASC'];
+
+        return $this;
+    }
+
+    /**
+     * orderBy DESC clause
+     *
+     * @param string $column
+     * @return $this
+     */
+    public function latest($column = 'id')
+    {
+        $this->orderBy = [$column, 'DESC'];
+
+        return $this;
+    }
+
+    /**
+     * Set Limit clause
+     *
+     * @param int $limit
+     * @return $this
+     */
+    public function limit($limit, $offset = 0)
+    {
+        $this->limit = $limit;
+
+        $this->offset = $offset;
+
+        return $this;
+    }
+
+    /**
+     * Set Offset clause
+     *
+     * @param int $offset
+     * @return $this
+     */
+    public function offset($offset = 0)
+    {
+        $this->offset = $offset;
+
+        return $this;
+    }
+
+    /**
+     * Fetch Table
+     * Thus Will return Only One Record
+     *
+     * @param string $table
+     * @return \stdClass|null
+     */
+    public function fetch($table = null)
+    {
+        if ($table) {
+            $this->table = $table;
+        }
+
+        $result = $this->setFetchStyle()->fetch();
+
+        $this->resetAll();
+
+        return $result;
+    }
+
+    /**
+     * Fetch Table
+     * Thus Will return Only One Record
+     *
+     * @param string $table
+     * @return \stdClass|null
+     */
+    public function first($table = null)
+    {
+        return $this->fetch($table);
+    }
+
+    /**
+     * Fetch All Records From The Table
+     *
+     * @param string $table
+     * @return array
+     */
+    public function get($table = null)
+    {
+        if ($table) {
+            $this->table = $table;
+        }
+
+        $query = $this->setFetchStyle();
+
+        $this->rows = $query->rowCount();
+
+        $results = $query->fetchAll();
+
+        $this->resetAll();
+
+        return $results;
+    }
+
+    /**
+     * Get Total Rows From Last Fetch All Statement
+     *
+     * @return int
+     */
+    public function rowsCount()
+    {
+       return $this->rows;
+    }
+
+    /**
+     * Set Fetch and Fetch All style
+     *
+     * @param string $table
+     * @return Array
+     */
+    private function setFetchStyle()
+    {
+        $sql = $this->fetchStatements();
+
+        return $this->query($sql, $this->bindings);
+    }
+
+    /**
+     * Delete Clause
+     *
+     * @param $table
+     * @return $this
+     */
+    public function delete($table = null)
+    {
+        if ($table) {
+            $this->table = $table;
+        }
+
+        $sql = "DELETE FROM {$this->table}" ;
+
+        $sql .= $this->setFields();
+
+        $this->query($sql, $this->bindings);
+
+        $this->resetAll();
+
+        return $this;
+    }
+
+
+
+    /**
+     * Prepare Select Statement
+     *
+     * @return string
+     */
+    private function fetchStatements()
+    {
+        $sql = ' SELECT ';
+
+        if ($this->selects) {
+            $sql .= implode(' , ', $this->selects);
+        } else {
+            $sql .= ' * ';
+        }
+
+        $sql .= " FROM {$this->table} ";
+
+
+        if ($this->joins) {
+            $sql .= implode(' ', $this->joins);
+        }
+
+        if ($this->wheres) {
+            $sql .= ' WHERE ' . implode(' ', $this->wheres);
+        }
+
+        if ($this->orderBy) {
+            $sql .= ' ORDER BY ' . implode(' ', $this->orderBy) ;
+        }
+
+        if ($this->limit) {
+            $sql .= ' LIMIT ' . $this->limit;
+        }
+
+        if ($this->offset) {
+            $sql .= ' OFFSET ' . $this->offset ;
+        }
+
+        return $sql;
+    }
+
 
     /**
      * Set The Table Name
@@ -189,6 +476,7 @@ class Database
 
         $this->lastId = static::$connection->lastInsertId();
 
+        $this->resetAll();
 
         return $this;
     }
@@ -245,6 +533,7 @@ class Database
         
         $this->query($sql, $this->bindings);
         
+        $this->resetAll();
 
         return $this;
     }
@@ -352,6 +641,25 @@ class Database
         } else {
             $this->bindings[] = $value;
         }
+    }
+
+    /**
+     * Reset All Data
+     *
+     * @return void
+     */
+    private function resetAll()
+    {
+        $this->rows         = 0;
+        $this->limit        = 0;
+        $this->offset       = 0;
+        $this->table        = null;
+        $this->bindings     = [];
+        $this->data         = [];
+        $this->selects      = [];
+        $this->joins        = [];
+        $this->wheres       = [];
+        $this->orderBy      = [];
     }
 
 }
