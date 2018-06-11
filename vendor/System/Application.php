@@ -62,9 +62,12 @@ class Application
 
         $this->request->prepareUrl();
 
-        $this->file->call($this->file->toAppPath('app\routes'));
+        $this->file->call($this->file->toBasePath('routes/web'));
 
         [ $controller, $method, $arguments ] = $this->route->getProperRoute();
+
+        $this->load->action($controller, $method, $arguments);
+        
     }
 
     /**

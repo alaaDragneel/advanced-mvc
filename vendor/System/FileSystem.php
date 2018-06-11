@@ -90,6 +90,17 @@ class FileSystem
     {
         return $this->to('vendor/' . $path . '.php');  
     }
+    
+    /**
+     * Generate Full Path to Base Directory
+     *
+     * @param string $path
+     * @return bool
+     */
+    public function toBasePath($path)
+    {
+        return $this->to($path . '.php');  
+    }
 
     /**
      * Generate full path to the giving path
