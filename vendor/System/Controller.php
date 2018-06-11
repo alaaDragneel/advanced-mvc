@@ -9,7 +9,7 @@ abstract class Controller
      * 
      * @var \System\Application
      */
-    private $app;
+    protected $app;
 
     /**
      * Constructor
