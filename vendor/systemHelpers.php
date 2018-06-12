@@ -1,5 +1,7 @@
 <?php
 
+use System\Application;
+
 if (! function_exists('dd')) {
     /**
      * Visualize The Given variable in browser
@@ -45,5 +47,21 @@ if (!function_exists('__e')) {
     {
         return htmlspecialchars($value);
     }
+}
 
+if (!function_exists('assets')) {
+    /**
+     * Generate Full Path For The Given Path in The Public Directory
+     *
+     * @param string $path
+     * @return string
+     */
+    function assets($path)
+    {
+        $app = Application::getInstance();
+
+        $path = trim($path, '/');
+        
+        return $app->url->link("public/{$path}");
+    }
 }

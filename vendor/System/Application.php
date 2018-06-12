@@ -209,6 +209,7 @@ class Application
             'html'      => 'System\\Html',
             'db'        => 'System\\Database',
             'view'      => 'System\\View\\ViewFactory',
+            'url'       => 'System\\Url',
         ];
     }
 

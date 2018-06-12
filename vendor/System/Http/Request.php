@@ -34,7 +34,7 @@ class Request
     }
 
     $this->url = preg_replace("#^{$script}#", '', $requestUri);
-    $this->baseUrl = $this->server('REQUEST_SCHEME') . '://' . $this->server('HTTP_HOST') . $script;
+    $this->baseUrl = $this->server('REQUEST_SCHEME') . '://' . $this->server('HTTP_HOST') . $script . '/';
   }
 
   /**
