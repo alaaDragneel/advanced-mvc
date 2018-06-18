@@ -459,10 +459,11 @@ class Database
     /**
      * Insert Data To Database
      *
-     * @param $table
-     * @return $this
+     * @param string $table
+     * @param array $data
+     * @return object $this
      */
-    public function insert($table = null)
+    public function insert($table = null, array $data = [])
     {
         if ($table) {
             $this->table($table);
@@ -514,8 +515,9 @@ class Database
     /**
      * Update Data in Database
      *
-     * @param $table
-     * @return $this
+     * @param string $table
+     * @param array $data
+     * @return object $this
      */
     public function update($table = null, array $data = [])
     {
