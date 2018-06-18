@@ -12,6 +12,13 @@ abstract class Controller
     protected $app;
 
     /**
+     * Errors Container
+     * 
+     * @var array
+     */
+    protected $errors = [];
+
+    /**
      * Constructor
      * 
      * @param \System\Application
@@ -19,6 +26,17 @@ abstract class Controller
     public function __construct(Application $app)
     {
         $this->app = $app;
+    }
+    
+    /**
+     * Convert Passed Data To Json
+     *
+     * @param mixed $data
+     * @return string
+     */
+    public function toJson($data)
+    {
+        return json_encode($data);
     }
     
     /**
