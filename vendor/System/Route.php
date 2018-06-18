@@ -26,6 +26,13 @@ class Route
     private $notFound;
 
     /**
+     * Current Route
+     *
+     * @var string
+     */
+    private $currentRoute;
+
+    /**
      * Constructor
      * @param \System\Application $app
      */
@@ -132,15 +139,30 @@ class Route
     public function getProperRoute()
     {
         foreach ($this->routes as $route) {
-            if ($this->isMatching($route['pattern'])) {
+            if ($this->isMatching($route['pattern']) && $this->isMatchingRequestMethod($route['method'])) {
                 $arguments = $this->getArgumentsFrom($route['pattern']);
 
                 // controller@method
                 [ $controller, $method ] = explode('@', $route['action']);
+                
+                $this->currentRoute = $route;
 
                 return [$controller, $method, $arguments];
             }
         }
+
+        // fallback
+        return $this->app->url->redirect($this->notFound);
+    }
+
+    /**
+     * Get Current Route Url
+     *
+     * @return string
+     */
+    public function getCurrentRouteUrl()
+    {
+        return $this->currentRoute['url'];
     }
 
     /**
@@ -152,6 +174,17 @@ class Route
     private function isMatching($pattern)
     {
         return preg_match($pattern, $this->app->request->url());
+    }
+
+    /**
+     * Determine If The Current Request Url Equals The Given Route Method  
+     *
+     * @param string $method
+     * @return boolean
+     */
+    private function isMatchingRequestMethod($method)
+    {
+        return $method == $this->app->request->method();
     }
 
     /**
