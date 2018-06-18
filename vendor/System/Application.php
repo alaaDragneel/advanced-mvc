@@ -211,6 +211,7 @@ class Application
             'view'      => 'System\\View\\ViewFactory',
             'url'       => 'System\\Url',
             'validator' => 'System\\Validator',
+            'pagination'=> 'System\\Pagination',
         ];
     }
 
