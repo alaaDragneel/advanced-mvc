@@ -19,13 +19,21 @@ class Request
   private $baseUrl;
 
   /**
+   * Uploaded File Containers
+   * 
+   * @var array $files
+   */
+  private $files = [];
+
+
+  /**
    * Prepare Url
    *
    * @return void
    */
   public function prepareUrl()
   {
-    $script = strtolower(dirname($this->server('SCRIPT_NAME')));
+    $script = dirname($this->server('SCRIPT_NAME'));
 
     $requestUri = $this->server('REQUEST_URI');
 
@@ -33,7 +41,13 @@ class Request
       [$requestUri, $queryString] = explode('?', $requestUri);
     }
 
-    $this->url = preg_replace("#^{$script}#", '', $requestUri);
+    $this->url = rtrim(preg_replace("#^{$script}#i", '', $requestUri), '/');
+    
+    // if we go to domain.com it redirect to /404 so we overwrite it with /
+    if (!$this->url) {
+      $this->url = '/';
+    }
+
     $this->baseUrl = $this->server('REQUEST_SCHEME') . '://' . $this->server('HTTP_HOST') . $script . '/';
   }
 
@@ -62,6 +76,35 @@ class Request
   }
 
   /**
+   * Get The File Uploaded Object By The Given Key
+   *
+   * @param sting $input
+   * @return \System\Http\FileUpload
+   */
+  public function file($input)
+  {
+    if (isset($this->files[$input])) {
+      return $this->files[$input];
+    }
+
+    $uploadedFile = new UploadFile($input);
+
+    $this->files[$input] = $uploadedFile;
+
+    return $this->files[$input]; 
+  }
+
+  /**
+   * Get All Value From $_REQUEST
+   *
+   * @return array
+   */
+  public function all()
+  {
+    return $_REQUEST;
+  }
+
+  /**
    * Get Value From $_SERVER By The Given Key
    *
    * @param sting $key
@@ -80,7 +123,7 @@ class Request
    */
   public function method()
   {
-    return $this->server('REQUEST_METHOD');    
+    return $this->server('REQUEST_METHOD');
   }
 
   /**
@@ -90,7 +133,7 @@ class Request
    */
   public function baseUrl()
   {
-    return $this->baseUrl; 
+    return $this->baseUrl;
   }
 
   /**
@@ -100,6 +143,6 @@ class Request
    */
   public function url()
   {
-    return $this->url; 
+    return $this->url;
   }
 }
