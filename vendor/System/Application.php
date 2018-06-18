@@ -65,7 +65,7 @@ class Application
         $this->file->call($this->file->toBasePath('routes/web'));
 
         [ $controller, $method, $arguments ] = $this->route->getProperRoute();
-
+                
         // (string) => convert the output object to string this usually Get Error
         // But We Use [ "__toString()" ] Magic Method in the \System\View\View
         $output = (string) $this->load->action($controller, $method, $arguments);
@@ -159,7 +159,7 @@ class Application
      */
     public function share($key, $value)
     {
-        $this->container[$key] = $value;
+        $this->container[$key] = is_callable($value) ? $value($this) : $value;
 
         return $this;
     }
