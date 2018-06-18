@@ -71,4 +71,14 @@ abstract class Model
         return $this->where('id = ?', $id)->first($this->table);
     }
 
+    /**
+     * Start New Query
+     *
+     * @return \System\Database
+     */
+    public function query()
+    {
+        return $this->table($this->table);
+    }
+
 }
