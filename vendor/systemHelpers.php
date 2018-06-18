@@ -65,3 +65,20 @@ if (!function_exists('assets')) {
         return $app->url->link("public/{$path}");
     }
 }
+
+if (!function_exists('url')) {
+    /**
+     * Generate Full Path For The Given Path 
+     *
+     * @param string $path
+     * @return string
+     */
+    function url($path)
+    {
+        $app = Application::getInstance();
+
+        $path = trim($path, '/');
+        
+        return $app->url->link($path);
+    }
+}

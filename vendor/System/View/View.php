@@ -67,7 +67,7 @@ class View implements ViewInterface
      */
     private function preparePath($viewPath)
     {
-        $this->viewPath = $this->file->toBasePath(static::$viewDirectoryPath . $viewPath);
+        $this->viewPath = $this->file->toBasePath(static::$viewDirectoryPath . $viewPath); // its app .php by default
 
         if (!$this->viewFileExists()) {
             die('<b>' . $this->viewPath . ' View </b>' . ' Doesn\'t Exists In Views Folder');
